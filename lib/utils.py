@@ -1,6 +1,6 @@
 import extruct as ex
 import pandas as pd
-from db import cursor, mydb
+from db import insert_into_table, mydb
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -27,26 +27,24 @@ def get_next_page(driver):
         return ''
 
 
-def save_data(data, df):
-    for item in data['json-ld']:
-        if "itemListElement" in item:
-            for product in item['itemListElement']:
-                new_product = product['item']
-                if not isinstance(new_product, str):
-                    row = {
-                        'name': new_product.get('name'),
-                        'price': new_product.get('offers').get('highPrice'),
-                        'valid_until': new_product.get('offers').get('offers')[0].get('priceValidUntil')
-                    }
+def save_data(data, df, table_name):
+    if data['json-ld']:
+        for item in data['json-ld']:
+            if "itemListElement" in item:
+                for product in item['itemListElement']:
+                    new_product = product['item']
+                    if not isinstance(new_product, str):
+                        row = {
+                            'name': new_product.get('name'),
+                            'price': new_product.get('offers').get('highPrice'),
+                            'valid_until': new_product.get('offers').get('offers')[0].get('priceValidUntil')
+                        }
+                        params = (row.get('name'), row.get('price'), row.get('valid_until'))
+                        
+                        insert_into_table(table_name, params)
 
-                    sql_insert = "INSERT INTO olimpica (name, price, valid_until) VALUES (%s, %s, %s)"
-                    params = (row.get('name'), row.get('price'), row.get('valid_until'))
-                    
-                    cursor.execute(sql_insert, params)
-
-                    mydb.commit()
-                    print('Saved to database: store_data')
-
-                    new_df = pd.DataFrame([row])
-                    df = pd.concat([df, new_df], axis=0, ignore_index=True)
-    return df
+                        new_df = pd.DataFrame([row])
+                        df = pd.concat([df, new_df], axis=0, ignore_index=True)
+        return df
+    else:
+        print(data)

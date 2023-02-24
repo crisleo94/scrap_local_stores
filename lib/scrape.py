@@ -5,11 +5,18 @@ from lib.utils import (get_driver, get_json, get_next_page, get_source,
 
 
 def scrape_data(url):
-    df = pd.DataFrame(columns=['name', 'price', 'valid_until'])
+    store_name = url.split('.')[1].lower()
+    df = pd.DataFrame()
+
+    if store_name == 'exito' or store_name == 'olimpica':
+        df.columns = ['name', 'price', 'valid_until']
+    elif store_name == 'merqueo':
+        df.columns = []
+
     driver = get_driver()
     source = get_source(driver, url)
     json = get_json(source)
-    df = save_data(json, df)
+    df = save_data(json, df, store_name)
 
     next_page = get_next_page(driver, source)
     paginated_urls = []
