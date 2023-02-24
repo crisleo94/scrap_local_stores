@@ -1,29 +1,17 @@
-import pandas as pd
+from flask import Flask
 
-from lib.utils import (get_driver, get_json, get_next_page, get_source,
-                       save_data)
+from lib.constants import EXITO_URL, OLIMPICA_URL
+from lib.scrape import scrape_data
 
-url = 'https://www.olimpica.com/supermercado/despensa'
-df = pd.DataFrame(columns=['name', 'price', 'valid_until'])
+app = Flask(__name__)
+app.secret_key = 'scrapedata_from_stores'
 
-driver = get_driver()
-source = get_source(driver, url)
-json = get_json(source)
-df = save_data(json, df)
+@app.route('/scrape', methods=['GET'])
+def scrape_olimpica(category):
+    # when building the url just pass the category after a slash
+    url = f'{OLIMPICA_URL}/{category}'
+    pass
 
-next_page = get_next_page(driver, source)
-paginated_urls = []
-paginated_urls.append(next_page)
-
-if paginated_urls:
-    for url in paginated_urls:
-        if url:
-            driver = get_driver()
-            source = get_source(driver, url)
-            json = get_json(source)
-            df = save_data(json, df)
-            next_page = get_next_page(driver, source)
-            paginated_urls.append(next_page)
-            df.to_csv("data.csv")
-    print('Saved to CSV file: data.csv')
-
+@app.route('/categories')
+def categories():
+    pass

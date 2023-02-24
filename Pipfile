@@ -10,6 +10,7 @@ selenium = "*"
 extruct = "*"
 prettytable = "*"
 mysql-connector-python = "*"
+flask = "*"
 
 [dev-packages]
 
