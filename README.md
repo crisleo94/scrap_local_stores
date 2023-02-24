@@ -4,4 +4,5 @@ To run the application just install Pipenv, inside a pipenv environment execute 
 # TODO
  - [ ] Give a default url lists to select
  - [ ] There are some stores that use different categories, give an option to insert a category
- - [ ] Create FLASK api to retrieve data from the database 
+ - [ ] Scrape categories for every store
+ - [ ] Create FLASK api to retrieve data from the database
