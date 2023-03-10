@@ -1,9 +1,10 @@
 import extruct as ex
 import pandas as pd
-from db import insert_into_table, mydb
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+
+from .db import insert_into_table, mydb
 
 
 def get_driver():
@@ -27,7 +28,7 @@ def get_next_page(driver):
         return ''
 
 
-def save_data(data, df, table_name):
+def save_data(data, df, table_name, category):
     if data['json-ld']:
         for item in data['json-ld']:
             if "itemListElement" in item:
@@ -37,9 +38,10 @@ def save_data(data, df, table_name):
                         row = {
                             'name': new_product.get('name'),
                             'price': new_product.get('offers').get('highPrice'),
-                            'valid_until': new_product.get('offers').get('offers')[0].get('priceValidUntil')
+                            'valid_until': new_product.get('offers').get('offers')[0].get('priceValidUntil'),
+                            'category': category
                         }
-                        params = (row.get('name'), row.get('price'), row.get('valid_until'))
+                        params = (row.get('name'), row.get('price'), row.get('valid_until'), row.get('category'))
                         
                         insert_into_table(table_name, params)
 

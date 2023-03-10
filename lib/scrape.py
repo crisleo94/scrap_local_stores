@@ -1,24 +1,18 @@
 import pandas as pd
 
-from lib.utils import (get_driver, get_json, get_next_page, get_source,
-                       save_data)
+from .utils import get_driver, get_json, get_next_page, get_source, save_data
 
 
-def scrape_data(url):
-    store_name = url.split('.')[1].lower()
-    df = pd.DataFrame()
-
-    if store_name == 'exito' or store_name == 'olimpica':
-        df.columns = ['name', 'price', 'valid_until']
-    elif store_name == 'merqueo':
-        df.columns = []
+def scrape_data(url, site, category):
+    df = pd.DataFrame(pd.np.empty((0, 4)))
+    df.columns = ['name', 'price', 'valid_until', 'category']
 
     driver = get_driver()
     source = get_source(driver, url)
     json = get_json(source)
-    df = save_data(json, df, store_name)
+    df = save_data(json, df, site, category)
 
-    next_page = get_next_page(driver, source)
+    next_page = get_next_page(driver)
     paginated_urls = []
     paginated_urls.append(next_page)
 
@@ -28,8 +22,10 @@ def scrape_data(url):
                 driver = get_driver()
                 source = get_source(driver, url)
                 json = get_json(source)
-                df = save_data(json, df)
-                next_page = get_next_page(driver, source)
+                df = save_data(json, df, site, category)
+                next_page = get_next_page(driver)
                 paginated_urls.append(next_page)
                 df.to_csv("data.csv")
         print('Saved to CSV file: data.csv')
+
+# scrape_data('https://www.olimpica.com/supermercado/despensa', 'olimpica', 'despensa')
